@@ -117,9 +117,11 @@ const groupLabel = (extraTop = false): React.CSSProperties => ({
 export function Sidebar({
   screen,
   onNavigate,
+  onLogout,
 }: {
   screen: Screen;
   onNavigate: (s: Screen) => void;
+  onLogout: () => void;
 }) {
   return (
     <aside
@@ -207,9 +209,18 @@ export function Sidebar({
         >
           A
         </div>
-        <div style={{ minWidth: 0 }}>
+        <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{ fontSize: 12.5, fontWeight: 700 }}>Você (Admin)</div>
           <div style={{ fontSize: 11, color: T.muted }}>Superadmin</div>
+        </div>
+        <div
+          onClick={onLogout}
+          title="Sair"
+          style={{ width: 30, height: 30, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.muted }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+          </svg>
         </div>
       </div>
     </aside>

@@ -1,18 +1,26 @@
 import { T } from "../theme";
 import { Avatar, Card, Chip, KpiCard, Pill, SearchBox, healthColor, tableHeadStyle } from "../lib/ui";
-import { clientsRaw, segments, topClients, type Client, type CliStatus } from "../data/mock";
+import { segments, topClients, type Client, type CliStatus } from "../data/mock";
 
 export type CliFilter = "todos" | "ativos" | "trial" | "ociosos";
 const STATUS_MAP: Record<CliFilter, CliStatus | null> = { todos: null, ativos: "ativo", trial: "trial", ociosos: "ocioso" };
 const grid = "2.2fr 1fr 1fr 1fr 1.1fr 1fr";
 
 export function Clientes({
+  data,
+  loading,
+  error,
+  leadsProcessed,
   filter,
   setFilter,
   query,
   setQuery,
   onOpen,
 }: {
+  data: Client[];
+  loading: boolean;
+  error: string | null;
+  leadsProcessed: number | null;
   filter: CliFilter;
   setFilter: (f: CliFilter) => void;
   query: string;
@@ -20,22 +28,26 @@ export function Clientes({
   onOpen: (c: Client) => void;
 }) {
   const q = query.toLowerCase();
-  const rows = clientsRaw
+  const rows = data
     .filter((c) => (STATUS_MAP[filter] ? c.status === STATUS_MAP[filter] : true))
     .filter((c) => (q ? c.name.toLowerCase().includes(q) || c.city.toLowerCase().includes(q) || c.email.toLowerCase().includes(q) : true));
-  const count = (st: CliStatus) => clientsRaw.filter((c) => c.status === st).length;
+  const count = (st: CliStatus) => data.filter((c) => c.status === st).length;
+
+  const total = data.length;
+  const active = data.filter((c) => c.status === "ativo").length;
+  const idle = data.filter((c) => c.status === "ocioso").length;
 
   return (
     <div>
-      {/* KPIs */}
+      {/* KPIs (reais) */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 13, marginBottom: 16 }}>
-        <KpiCard label="Total de clientes" value="429" />
-        <KpiCard label="Ativos (últimos 30d)" value="318" delta="74% da base" deltaColor={T.greenD} />
-        <KpiCard label="Ociosos (risco)" value="24" valueColor={T.amberD} delta="abordar" deltaColor={T.amberD} />
-        <KpiCard label="Ticket médio (ARPA)" value="R$ 141" />
+        <KpiCard label="Total de clientes" value={loading ? "…" : String(total)} />
+        <KpiCard label="Ativos (recentes)" value={loading ? "…" : String(active)} delta={total ? `${Math.round((active / total) * 100)}% da base` : "—"} deltaColor={T.greenD} />
+        <KpiCard label="Ociosos (risco)" value={loading ? "…" : String(idle)} valueColor={T.amberD} delta="abordar" deltaColor={T.amberD} />
+        <KpiCard label="Leads processados" value={loading || leadsProcessed === null ? "…" : leadsProcessed.toLocaleString("pt-BR")} />
       </div>
 
-      {/* top clientes + segmentação */}
+      {/* top clientes + segmentação (mock — analytics a computar na próxima etapa) */}
       <div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
         <Card style={{ flex: 1, overflow: "hidden" }}>
           <div style={{ padding: "18px 22px", borderBottom: `1px solid ${T.line}` }}>
@@ -81,19 +93,27 @@ export function Clientes({
 
       {/* chips + busca */}
       <div style={{ display: "flex", gap: 10, marginBottom: 14, flexWrap: "wrap" }}>
-        <Chip label="Todos" n={clientsRaw.length} active={filter === "todos"} onClick={() => setFilter("todos")} />
+        <Chip label="Todos" n={data.length} active={filter === "todos"} onClick={() => setFilter("todos")} />
         <Chip label="Ativos" n={count("ativo")} active={filter === "ativos"} onClick={() => setFilter("ativos")} />
         <Chip label="Trial" n={count("trial")} active={filter === "trial"} onClick={() => setFilter("trial")} />
         <Chip label="Ociosos" n={count("ocioso")} active={filter === "ociosos"} onClick={() => setFilter("ociosos")} />
         <SearchBox value={query} onChange={setQuery} placeholder="Buscar cliente…" width={260} />
       </div>
 
-      {/* lista */}
+      {/* lista (real) */}
       <Card style={{ overflow: "hidden" }}>
         <div style={{ display: "grid", gridTemplateColumns: grid, gap: 8, padding: "13px 22px", ...tableHeadStyle }}>
           <span>Cliente</span><span>Plano</span><span>Status</span><span>Saúde</span><span>Leads gerados</span><span>Últ. atividade</span>
         </div>
-        {rows.map((c) => {
+
+        {loading && <div style={{ padding: "40px 22px", textAlign: "center", color: T.faint, fontSize: 13 }}>Carregando clientes…</div>}
+        {error && !loading && (
+          <div style={{ padding: "40px 22px", textAlign: "center", color: T.redD, fontSize: 13 }}>
+            {error === "not_admin" ? "Acesso restrito a superadmin." : `Erro ao carregar: ${error}`}
+          </div>
+        )}
+
+        {!loading && !error && rows.map((c) => {
           const hc = healthColor(c.health);
           return (
             <div
@@ -119,7 +139,8 @@ export function Clientes({
             </div>
           );
         })}
-        {rows.length === 0 && (
+
+        {!loading && !error && rows.length === 0 && (
           <div style={{ padding: "40px 22px", textAlign: "center", color: T.faint, fontSize: 13 }}>
             Nenhum cliente encontrado com esse filtro.
           </div>
