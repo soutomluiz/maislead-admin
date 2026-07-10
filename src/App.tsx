@@ -1,44 +1,60 @@
-// Placeholder inicial — substituído pela shell real (sidebar 240px + topbar + 7 telas)
-// nos próximos commits. Existe só para o primeiro deploy do Netlify ter conteúdo.
+import { useState } from "react";
+import { T, type Screen } from "./theme";
+import { Sidebar } from "./components/Sidebar";
+import { Topbar } from "./components/Topbar";
+import { VisaoGeral } from "./screens/VisaoGeral";
+
+const TITLES: Record<Screen, [string, string]> = {
+  visao: ["Visão Geral", "Julho 2025 · atualizado agora"],
+  assinaturas: ["Assinaturas", "342 ativas · 8 em trial · 6 inadimplentes"],
+  clientes: ["Clientes", "429 clientes cadastrados"],
+  financeiro: ["Financeiro", "Receitas, custos e contas da plataforma"],
+  cadastros: ["Cadastros", "87 novos cadastros no mês"],
+  relatorios: ["Relatórios", "Análises e exportações"],
+  integracoes: ["Integrações", "5 de 6 serviços operacionais"],
+};
+
+function Soon({ label }: { label: string }) {
+  return (
+    <div
+      style={{
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: T.faint,
+        fontSize: 14,
+        fontWeight: 600,
+      }}
+    >
+      {label} — em construção
+    </div>
+  );
+}
+
 export function App() {
+  const [screen, setScreen] = useState<Screen>("visao");
+  const [title, subtitle] = TITLES[screen];
+
   return (
     <div
       style={{
         height: "100vh",
         display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 16,
-        background: "#eceaf6",
-        color: "#211d3b",
-        fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif",
+        background: T.appBg,
+        color: T.text,
+        overflow: "hidden",
+        position: "relative",
       }}
     >
-      <div
-        style={{
-          width: 64,
-          height: 64,
-          borderRadius: 18,
-          background: "linear-gradient(135deg,#6d5cf5,#9d7bff)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#fff",
-          fontWeight: 800,
-          fontSize: 30,
-          boxShadow: "0 12px 30px rgba(109,92,245,.35)",
-        }}
-      >
-        m
-      </div>
-      <div style={{ textAlign: "center" }}>
-        <div style={{ fontSize: 20, fontWeight: 800 }}>maisLEAD</div>
-        <div style={{ fontSize: 12.5, fontWeight: 700, color: "#8f8caa", letterSpacing: ".08em" }}>
-          SUPERADMIN
+      <Sidebar screen={screen} onNavigate={setScreen} />
+
+      <main style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <Topbar title={title} subtitle={subtitle} />
+        <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "24px 26px" }}>
+          {screen === "visao" ? <VisaoGeral onNavigate={setScreen} /> : <Soon label={title} />}
         </div>
-      </div>
-      <div style={{ fontSize: 13.5, color: "#8f8caa" }}>Painel em construção…</div>
+      </main>
     </div>
   );
 }
