@@ -21,6 +21,11 @@ body {
   background: #d9d6ea;
   border-radius: 5px;
 }
+/* hover das linhas de tabela clicáveis */
+.ml-row:hover {
+  background: #faf9fe;
+}
+
 /* ponto verde "Ao vivo" (único keyframe do protótipo) */
 @keyframes livedot {
   0% {
