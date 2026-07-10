@@ -1,6 +1,7 @@
 import { T } from "../theme";
 import { Avatar, Card, Chip, KpiCard, Pill, SearchBox, healthColor, tableHeadStyle } from "../lib/ui";
-import { segments, topClients, type Client, type CliStatus } from "../data/mock";
+import { segments, topClients, type CliStatus } from "../data/mock";
+import type { RealCustomer } from "../lib/api";
 
 export type CliFilter = "todos" | "ativos" | "trial" | "ociosos";
 const STATUS_MAP: Record<CliFilter, CliStatus | null> = { todos: null, ativos: "ativo", trial: "trial", ociosos: "ocioso" };
@@ -17,7 +18,7 @@ export function Clientes({
   setQuery,
   onOpen,
 }: {
-  data: Client[];
+  data: RealCustomer[];
   loading: boolean;
   error: string | null;
   leadsProcessed: number | null;
@@ -25,7 +26,7 @@ export function Clientes({
   setFilter: (f: CliFilter) => void;
   query: string;
   setQuery: (q: string) => void;
-  onOpen: (c: Client) => void;
+  onOpen: (c: RealCustomer) => void;
 }) {
   const q = query.toLowerCase();
   const rows = data

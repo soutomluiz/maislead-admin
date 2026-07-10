@@ -1,10 +1,18 @@
 import { T } from "../theme";
-import { integrations } from "../data/mock";
+import type { IntegrationHealth } from "../lib/api";
 
-export function Integracoes() {
+export function Integracoes({ data, loading, error }: { data: IntegrationHealth[]; loading: boolean; error: string | null }) {
+  if (loading) return <div style={{ padding: "40px 0", textAlign: "center", color: T.faint, fontSize: 13 }}>Verificando serviços…</div>;
+  if (error)
+    return (
+      <div style={{ padding: "40px 0", textAlign: "center", color: T.redD, fontSize: 13 }}>
+        {error === "not_admin" ? "Acesso restrito a superadmin." : `Erro ao verificar: ${error}`}
+      </div>
+    );
+
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 14 }}>
-      {integrations.map((it) => (
+      {data.map((it) => (
         <div
           key={it.name}
           style={{
@@ -29,7 +37,7 @@ export function Integracoes() {
               <span style={{ width: 8, height: 8, borderRadius: "50%", background: it.dot }} />
               <span style={{ fontSize: 12, fontWeight: 700, color: it.statusCol }}>{it.status}</span>
             </div>
-            <div style={{ fontSize: 11, color: T.faint, marginTop: 3 }}>uptime {it.uptime}</div>
+            <div style={{ fontSize: 11, color: T.faint, marginTop: 3 }}>{it.info}</div>
           </div>
         </div>
       ))}

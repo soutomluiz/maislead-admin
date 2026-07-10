@@ -87,7 +87,36 @@ function Avatar({
 const sectionTitle: CSSProperties = { fontSize: 15, fontWeight: 800 };
 
 /* ---------- tela ---------- */
-export function VisaoGeral({ onNavigate }: { onNavigate: (s: Screen) => void }) {
+export interface IdleItem {
+  i: string;
+  name: string;
+  sub: string;
+  days: string;
+}
+
+const IDLE_PALETTE = [
+  { bg: "#e9e5ff", color: T.primary },
+  { bg: "#fde8f0", color: T.avatarPink },
+  { bg: "#fef0e6", color: T.avatarOrange },
+];
+
+const MOCK_IDLE: IdleItem[] = [
+  { i: "M", name: "Mercado Bom Preço", sub: "Business · R$ 349/mês", days: "22 dias" },
+  { i: "C", name: "Clínica Vida+", sub: "Pro · R$ 149/mês", days: "18 dias" },
+  { i: "T", name: "Transportes Rocha", sub: "Pro · R$ 149/mês", days: "15 dias" },
+];
+
+export function VisaoGeral({
+  onNavigate,
+  leadsProcessed,
+  idle,
+}: {
+  onNavigate: (s: Screen) => void;
+  leadsProcessed?: number | null;
+  idle?: IdleItem[];
+}) {
+  const idleRows = idle && idle.length ? idle : MOCK_IDLE;
+  const leadsValue = leadsProcessed != null ? leadsProcessed.toLocaleString("pt-BR") : "1,24 mi";
   return (
     <div>
       {/* KPIs */}
@@ -104,7 +133,7 @@ export function VisaoGeral({ onNavigate }: { onNavigate: (s: Screen) => void }) 
         <Kpi label="NRR" value="112%" delta="base cresce sozinha" venda />
         <Kpi label="Churn" value="2,1%" delta="▼ 0,3pp" />
         <Kpi label="LTV:CAC" value="4,3x" delta="saudável (>3x)" venda />
-        <Kpi label="Leads processados" value="1,24 mi" delta="▲ 8,2%" />
+        <Kpi label="Leads processados" value={leadsValue} delta="▲ 8,2%" />
       </div>
 
       {/* WATERFALL + DONUT */}
@@ -268,9 +297,24 @@ export function VisaoGeral({ onNavigate }: { onNavigate: (s: Screen) => void }) 
             Pagantes que não usam há +14 dias — abordar antes que cancelem
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <IdleRow letter="M" bg={T.lilacSoft} color={T.primary} name="Mercado Bom Preço" plan="Business · R$ 349/mês" days="22 dias" last />
-            <IdleRow letter="C" bg="#fde8f0" color={T.avatarPink} name="Clínica Vida+" plan="Pro · R$ 149/mês" days="18 dias" last />
-            <IdleRow letter="T" bg="#fef0e6" color={T.avatarOrange} name="Transportes Rocha" plan="Pro · R$ 149/mês" days="15 dias" />
+            {idleRows.map((it, idx) => {
+              const pal = IDLE_PALETTE[idx % IDLE_PALETTE.length];
+              return (
+                <IdleRow
+                  key={it.name + idx}
+                  letter={it.i}
+                  bg={pal.bg}
+                  color={pal.color}
+                  name={it.name}
+                  plan={it.sub}
+                  days={it.days}
+                  last={idx === idleRows.length - 1}
+                />
+              );
+            })}
+            {idleRows.length === 0 && (
+              <div style={{ fontSize: 12.5, color: T.faint, padding: "8px 0" }}>Nenhum cliente ocioso 🎉</div>
+            )}
           </div>
         </Card>
 
