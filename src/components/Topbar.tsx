@@ -1,6 +1,16 @@
 import { T } from "../theme";
 
-export function Topbar({ title, subtitle }: { title: string; subtitle: string }) {
+export function Topbar({
+  title,
+  subtitle,
+  search,
+  onSearch,
+}: {
+  title: string;
+  subtitle: string;
+  search: string;
+  onSearch: (v: string) => void;
+}) {
   return (
     <header
       style={{
@@ -30,20 +40,13 @@ export function Topbar({ title, subtitle }: { title: string; subtitle: string })
           padding: "7px 12px",
           borderRadius: 20,
         }}
+        title="Dados atualizados automaticamente"
       >
-        <span
-          style={{
-            width: 8,
-            height: 8,
-            borderRadius: "50%",
-            background: T.green,
-            animation: "livedot 2s infinite",
-          }}
-        />
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: T.green, animation: "livedot 2s infinite" }} />
         <span style={{ fontSize: 12, fontWeight: 700, color: T.greenD }}>Ao vivo</span>
       </div>
 
-      {/* busca */}
+      {/* busca (funcional) */}
       <div
         style={{
           display: "flex",
@@ -60,7 +63,12 @@ export function Topbar({ title, subtitle }: { title: string; subtitle: string })
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.3-4.3" />
         </svg>
-        <span style={{ fontSize: 13, color: T.faint }}>Buscar cliente…</span>
+        <input
+          value={search}
+          onChange={(e) => onSearch(e.target.value)}
+          placeholder="Buscar cliente…"
+          style={{ border: "none", outline: "none", background: "transparent", fontSize: 13, color: T.text, width: "100%", fontFamily: "inherit" }}
+        />
       </div>
     </header>
   );

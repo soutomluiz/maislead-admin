@@ -5,6 +5,7 @@ import type { Client } from "../data/mock";
 export interface RealCustomer extends Client {
   id: string;
   userId: string | null;
+  industry: string | null;
   planPrice: string;
   createdAt: string;
   idleDays: number;

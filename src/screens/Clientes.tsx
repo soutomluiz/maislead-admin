@@ -1,11 +1,12 @@
 import { T } from "../theme";
 import { Avatar, Card, Chip, KpiCard, Pill, SearchBox, healthColor, tableHeadStyle } from "../lib/ui";
-import { segments, topClients, type CliStatus } from "../data/mock";
+import type { CliStatus } from "../data/mock";
 import type { RealCustomer } from "../lib/api";
 
 export type CliFilter = "todos" | "ativos" | "trial" | "ociosos";
 const STATUS_MAP: Record<CliFilter, CliStatus | null> = { todos: null, ativos: "ativo", trial: "trial", ociosos: "ocioso" };
 const grid = "2.2fr 1fr 1fr 1fr 1.1fr 1fr";
+const SEG_COLORS = [T.primary, T.primary4, "#b79dff", T.lilac, "#e0d6ff"];
 
 export function Clientes({
   data,
@@ -38,6 +39,18 @@ export function Clientes({
   const active = data.filter((c) => c.status === "ativo").length;
   const idle = data.filter((c) => c.status === "ocioso").length;
 
+  // top clientes por uso (leads gerados) — real
+  const topByLeads = [...data].sort((a, b) => b.leads - a.leads).slice(0, 5);
+
+  // segmentação por setor — real (agrupa por industry)
+  const segMap = new Map<string, number>();
+  for (const c of data) {
+    const key = (c.industry || "Não informado").trim() || "Não informado";
+    segMap.set(key, (segMap.get(key) ?? 0) + 1);
+  }
+  const segList = [...segMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const segTotal = data.length || 1;
+
   return (
     <div>
       {/* KPIs (reais) */}
@@ -48,27 +61,29 @@ export function Clientes({
         <KpiCard label="Leads processados" value={loading || leadsProcessed === null ? "…" : leadsProcessed.toLocaleString("pt-BR")} />
       </div>
 
-      {/* top clientes + segmentação (mock — analytics a computar na próxima etapa) */}
+      {/* top clientes (por uso) + segmentação por setor — reais */}
       <div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
         <Card style={{ flex: 1, overflow: "hidden" }}>
           <div style={{ padding: "18px 22px", borderBottom: `1px solid ${T.line}` }}>
-            <div style={{ fontSize: 15, fontWeight: 800 }}>🏆 Top clientes por receita</div>
-            <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>Quem mais sustenta o faturamento</div>
+            <div style={{ fontSize: 15, fontWeight: 800 }}>🏆 Top clientes por uso</div>
+            <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>Quem mais gera leads na plataforma</div>
           </div>
-          {topClients.map((c) => (
-            <div key={c.rank} style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 22px", borderBottom: `1px solid ${T.line2}` }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: T.lilac, width: 18 }}>{c.rank}</div>
+          {loading && <div style={{ padding: "26px 22px", color: T.faint, fontSize: 13 }}>Carregando…</div>}
+          {!loading && topByLeads.map((c, idx) => (
+            <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 22px", borderBottom: `1px solid ${T.line2}` }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: T.lilac, width: 18 }}>{idx + 1}</div>
               <Avatar letter={c.i} size={32} font={13} />
-              <div style={{ flex: 1 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 13.5, fontWeight: 700 }}>{c.name}</div>
                 <div style={{ fontSize: 11, color: T.faint }}>{c.plan} · cliente há {c.since}</div>
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 14, fontWeight: 800 }}>{c.total}</div>
-                <div style={{ fontSize: 11, color: T.muted }}>acumulado</div>
+                <div style={{ fontSize: 14, fontWeight: 800 }}>{c.leads.toLocaleString("pt-BR")}</div>
+                <div style={{ fontSize: 11, color: T.muted }}>leads</div>
               </div>
             </div>
           ))}
+          {!loading && topByLeads.length === 0 && <div style={{ padding: "26px 22px", color: T.faint, fontSize: 13 }}>Sem dados.</div>}
         </Card>
 
         <Card style={{ flex: 1, overflow: "hidden" }}>
@@ -77,17 +92,22 @@ export function Clientes({
             <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>Onde a maisLEAD mais penetra</div>
           </div>
           <div style={{ padding: "18px 22px", display: "flex", flexDirection: "column", gap: 14 }}>
-            {segments.map((s) => (
-              <div key={s.name}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12.5, marginBottom: 5 }}>
-                  <span style={{ fontWeight: 700 }}>{s.name}</span>
-                  <span style={{ color: T.muted, fontWeight: 700 }}>{s.pct}%</span>
+            {loading && <div style={{ color: T.faint, fontSize: 13 }}>Carregando…</div>}
+            {!loading && segList.map(([name, n], idx) => {
+              const pct = Math.round((n / segTotal) * 100);
+              return (
+                <div key={name}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12.5, marginBottom: 5 }}>
+                    <span style={{ fontWeight: 700 }}>{name}</span>
+                    <span style={{ color: T.muted, fontWeight: 700 }}>{pct}%</span>
+                  </div>
+                  <div style={{ height: 10, background: T.line, borderRadius: 5, overflow: "hidden" }}>
+                    <div style={{ width: `${pct}%`, height: "100%", background: SEG_COLORS[idx % SEG_COLORS.length] }} />
+                  </div>
                 </div>
-                <div style={{ height: 10, background: T.line, borderRadius: 5, overflow: "hidden" }}>
-                  <div style={{ width: `${s.pct}%`, height: "100%", background: s.color }} />
-                </div>
-              </div>
-            ))}
+              );
+            })}
+            {!loading && segList.length === 0 && <div style={{ color: T.faint, fontSize: 13 }}>Sem dados de setor.</div>}
           </div>
         </Card>
       </div>
@@ -118,7 +138,7 @@ export function Clientes({
           const hc = healthColor(c.health);
           return (
             <div
-              key={c.i + c.name}
+              key={c.id}
               onClick={() => onOpen(c)}
               className="ml-row"
               style={{ display: "grid", gridTemplateColumns: grid, gap: 8, padding: "14px 22px", alignItems: "center", fontSize: 13, borderBottom: `1px solid ${T.line2}`, cursor: "pointer" }}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { T, type Screen } from "./theme";
 import { supabase } from "./lib/supabase";
 import { listCustomers, getIntegrationsHealth, type RealCustomer, type IntegrationHealth } from "./lib/api";
@@ -30,8 +30,28 @@ export function App() {
   return <AuthGate>{() => <Panel />}</AuthGate>;
 }
 
+function Splash({ label }: { label: string }) {
+  return <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: T.muted, fontSize: 14 }}>{label}</div>;
+}
+
+function AccessDenied() {
+  return (
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14, background: T.appBg, textAlign: "center", padding: 24 }}>
+      <div style={{ width: 52, height: 52, borderRadius: 14, background: "rgba(244,63,94,.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={T.redD} strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0110 0v4" /></svg>
+      </div>
+      <div style={{ fontSize: 18, fontWeight: 800 }}>Acesso restrito</div>
+      <div style={{ fontSize: 13.5, color: T.muted, maxWidth: 340 }}>Sua conta não tem permissão de superadmin para acessar este painel.</div>
+      <button onClick={() => supabase.auth.signOut()} style={{ marginTop: 6, height: 42, padding: "0 22px", borderRadius: 12, border: `1px solid ${T.border}`, background: "#fff", color: T.body, fontSize: 13.5, fontWeight: 700, cursor: "pointer" }}>
+        Sair
+      </button>
+    </div>
+  );
+}
+
 function Panel() {
   const [screen, setScreen] = useState<Screen>("visao");
+  const [checked, setChecked] = useState(false);
 
   // Assinaturas (mock — depende do Stripe)
   const [subFilter, setSubFilter] = useState<SubFilter>("todas");
@@ -55,22 +75,41 @@ function Panel() {
   // Relatórios (mock)
   const [period, setPeriod] = useState<Period>("30d");
 
-  useEffect(() => {
-    listCustomers()
-      .then((r) => {
-        setCustomers(r.customers);
-        setLeadsProcessed(r.counts.leadsProcessed);
-      })
-      .catch((e) => setCustError(e.message))
-      .finally(() => setCustLoading(false));
-
-    getIntegrationsHealth()
-      .then((r) => setIntegrations(r.integrations))
-      .catch((e) => setIntError(e.message))
-      .finally(() => setIntLoading(false));
+  const load = useCallback(async (initial: boolean) => {
+    try {
+      const r = await listCustomers();
+      setCustomers(r.customers);
+      setLeadsProcessed(r.counts.leadsProcessed);
+      setCustError(null);
+    } catch (e) {
+      setCustError((e as Error).message);
+    } finally {
+      if (initial) {
+        setCustLoading(false);
+        setChecked(true);
+      }
+    }
+    try {
+      const ir = await getIntegrationsHealth();
+      setIntegrations(ir.integrations);
+      setIntError(null);
+    } catch (e) {
+      setIntError((e as Error).message);
+    } finally {
+      if (initial) setIntLoading(false);
+    }
   }, []);
 
-  // ociosos reais para a Visão Geral
+  useEffect(() => {
+    load(true);
+    const id = setInterval(() => load(false), 45000); // badge "Ao vivo" — refresh silencioso
+    return () => clearInterval(id);
+  }, [load]);
+
+  // Gate: enquanto verifica → splash; se não é superadmin → acesso negado.
+  if (!checked) return <Splash label="Verificando acesso…" />;
+  if (custError === "not_admin") return <AccessDenied />;
+
   const idle: IdleItem[] = customers
     .filter((c) => c.status === "ocioso")
     .sort((a, b) => b.idleDays - a.idleDays)
@@ -79,12 +118,18 @@ function Panel() {
 
   const [title, subtitle] = TITLES[screen];
 
+  // busca global da topbar → filtra clientes e navega
+  const onTopSearch = (v: string) => {
+    setCliQuery(v);
+    if (v && screen !== "clientes") setScreen("clientes");
+  };
+
   return (
     <div style={{ height: "100vh", display: "flex", background: T.appBg, color: T.text, overflow: "hidden", position: "relative" }}>
       <Sidebar screen={screen} onNavigate={setScreen} onLogout={() => supabase.auth.signOut()} />
 
       <main style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
-        <Topbar title={title} subtitle={subtitle} />
+        <Topbar title={title} subtitle={subtitle} search={cliQuery} onSearch={onTopSearch} />
         <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "24px 26px" }}>
           {screen === "visao" && <VisaoGeral onNavigate={setScreen} leadsProcessed={leadsProcessed} idle={idle} />}
           {screen === "assinaturas" && (
@@ -105,12 +150,11 @@ function Panel() {
           )}
           {screen === "financeiro" && <Financeiro />}
           {screen === "cadastros" && <Cadastros customers={customers} loading={custLoading} error={custError} />}
-          {screen === "relatorios" && <Relatorios period={period} setPeriod={setPeriod} />}
+          {screen === "relatorios" && <Relatorios period={period} setPeriod={setPeriod} customers={customers} loading={custLoading} />}
           {screen === "integracoes" && <Integracoes data={integrations} loading={intLoading} error={intError} />}
         </div>
       </main>
 
-      {/* drawers (overlay sobre toda a raiz) */}
       {openSub && <SubscriptionDrawer sub={openSub} onClose={() => setOpenSub(null)} />}
       {openCli && (
         <CustomerDrawer
