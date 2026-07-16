@@ -11,7 +11,7 @@ const PERIODS: [Period, string][] = [
   ["12m", "12 meses"],
 ];
 const MONTHS = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-const PLAN_COLORS: Record<string, string> = { Business: "#6d5cf5", Pro: "#9d7bff", Starter: "#c9b8ff" };
+const PLAN_COLORS: Record<string, string> = { Business: "#4c2ee0", Pro: "#6d4bff", Starter: "#c9b8ff" };
 
 function exportCsv(customers: RealCustomer[]) {
   const headers = ["Conta", "Email", "Plano", "Status", "Leads", "Buscas", "Saude", "Ult atividade", "Criada"];
@@ -95,13 +95,13 @@ export function Relatorios({
           <svg viewBox="0 0 640 200" style={{ width: "100%", height: 190 }}>
             <defs>
               <linearGradient id="gr" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stopColor="#6d5cf5" stopOpacity=".26" />
-                <stop offset="1" stopColor="#6d5cf5" stopOpacity="0" />
+                <stop offset="0" stopColor="#4c2ee0" stopOpacity=".26" />
+                <stop offset="1" stopColor="#4c2ee0" stopOpacity="0" />
               </linearGradient>
             </defs>
             <path d={area} fill="url(#gr)" />
-            <path d={line} fill="none" stroke="#6d5cf5" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx={pts[pts.length - 1].x} cy={pts[pts.length - 1].y} r="5" fill="#6d5cf5" stroke="#fff" strokeWidth="2.5" />
+            <path d={line} fill="none" stroke="#4c2ee0" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx={pts[pts.length - 1].x} cy={pts[pts.length - 1].y} r="5" fill="#4c2ee0" stroke="#fff" strokeWidth="2.5" />
           </svg>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: T.faint, fontWeight: 600 }}>
             {growth.map((g, i) => <span key={i}>{g.label}</span>)}

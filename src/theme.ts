@@ -3,14 +3,14 @@
 
 export const T = {
   // marca
-  primary: "#6d5cf5",
+  primary: "#4c2ee0",
   primary2: "#7c5cff",
-  primary3: "#8b6bff",
-  primary4: "#9d7bff",
+  primary3: "#6d4bff",
+  primary4: "#6d4bff",
   lilac: "#c9b8ff",
   lilacSoft: "#e9e5ff",
-  gradLogo: "linear-gradient(135deg,#6d5cf5,#9d7bff)",
-  gradBtn: "linear-gradient(135deg,#6d5cf5,#8b6bff)",
+  gradLogo: "linear-gradient(135deg,#4c2ee0,#6d4bff)",
+  gradBtn: "linear-gradient(135deg,#4c2ee0,#6d4bff)",
 
   // texto
   text: "#211d3b",

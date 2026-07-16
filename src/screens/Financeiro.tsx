@@ -112,7 +112,7 @@ export function Financeiro() {
             <div style={{ flex: 1 }}><div style={{ fontWeight: 700 }}>{d.name}</div><div style={{ fontSize: 11, color: T.faint }}>{d.reason}</div></div>
             <span style={{ fontWeight: 800, marginRight: 14 }}>{d.val}</span>
             <span style={{ fontSize: 11, color: d.attemptColor, fontWeight: 700, marginRight: 14 }}>{d.attempt}</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: T.primary, cursor: "pointer", background: "rgba(109,92,245,.1)", padding: "6px 12px", borderRadius: 9 }}>Reprocessar</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: T.primary, cursor: "pointer", background: "rgba(76,46,224,.1)", padding: "6px 12px", borderRadius: 9 }}>Reprocessar</span>
           </div>
         ))}
       </div>

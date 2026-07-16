@@ -33,7 +33,7 @@ function Kpi({
               fontSize: 9,
               fontWeight: 800,
               color: T.primary,
-              background: "rgba(109,92,245,.1)",
+              background: "rgba(76,46,224,.1)",
               padding: "1px 5px",
               borderRadius: 5,
             }}
@@ -175,7 +175,7 @@ export function VisaoGeral({
                 style={{
                   width: "100%",
                   height: 148,
-                  background: "linear-gradient(180deg,#6d5cf5,#9d7bff)",
+                  background: "linear-gradient(180deg,#4c2ee0,#6d4bff)",
                   borderRadius: "7px 7px 0 0",
                 }}
               />
@@ -192,7 +192,7 @@ export function VisaoGeral({
                 width: 128,
                 height: 128,
                 borderRadius: "50%",
-                background: "conic-gradient(#c9b8ff 0 43%,#9d7bff 43% 84%,#6d5cf5 84% 100%)",
+                background: "conic-gradient(#c9b8ff 0 43%,#6d4bff 43% 84%,#4c2ee0 84% 100%)",
                 position: "relative",
                 flexShrink: 0,
               }}
@@ -226,7 +226,7 @@ export function VisaoGeral({
       <div
         style={{
           borderRadius: 20,
-          background: "linear-gradient(120deg,#6d5cf5,#8b6bff 55%,#9d7bff)",
+          background: "linear-gradient(120deg,#4c2ee0,#6d4bff 55%,#6d4bff)",
           padding: "22px 26px",
           color: "#fff",
           marginBottom: 16,

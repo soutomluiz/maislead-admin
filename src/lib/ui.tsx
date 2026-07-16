@@ -52,7 +52,7 @@ export function cohortShade(v: number | null): { bg: string; col: string; v: str
   if (v === null) return { bg: "#f6f5fb", col: "#f6f5fb", v: "" };
   const t = v / 100;
   return {
-    bg: `rgba(109,92,245,${(0.12 + t * 0.78).toFixed(2)})`,
+    bg: `rgba(76,46,224,${(0.12 + t * 0.78).toFixed(2)})`,
     col: t > 0.5 ? "#fff" : "#4a4568",
     v: v + "%",
   };
@@ -210,7 +210,7 @@ export function KpiCard({
   return (
     <div
       style={{
-        background: gradient ? "linear-gradient(135deg,#6d5cf5,#8b6bff)" : T.card,
+        background: gradient ? "linear-gradient(135deg,#4c2ee0,#6d4bff)" : T.card,
         border: gradient ? "none" : `1px solid ${T.border}`,
         borderRadius: T.radiusKpi,
         padding: "16px 18px",

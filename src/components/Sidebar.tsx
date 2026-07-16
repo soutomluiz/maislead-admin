@@ -88,7 +88,7 @@ function NavItem({
         cursor: "pointer",
         fontSize: 13.5,
         marginBottom: 2,
-        background: active ? "rgba(109,92,245,.1)" : "transparent",
+        background: active ? "rgba(76,46,224,.1)" : "transparent",
         color: active ? T.primary : T.body,
         fontWeight: active ? 700 : 500,
       }}

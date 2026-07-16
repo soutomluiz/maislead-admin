@@ -71,8 +71,8 @@ export const topClients = [
 ];
 
 export const segments = [
-  { name: "Comércio / Varejo", pct: 31, color: "#6d5cf5" },
-  { name: "Serviços / Saúde", pct: 24, color: "#9d7bff" },
+  { name: "Comércio / Varejo", pct: 31, color: "#4c2ee0" },
+  { name: "Serviços / Saúde", pct: 24, color: "#6d4bff" },
   { name: "Automotivo", pct: 18, color: "#b79dff" },
   { name: "Imobiliário", pct: 15, color: "#c9b8ff" },
   { name: "Outros", pct: 12, color: "#e0d6ff" },
@@ -108,7 +108,7 @@ export const payments: { i: string; name: string; plan: string; val: string; met
 
 export const dunning = [
   { i: "L", bg: "#fde8f0", color: "#e8437a", name: "Loja Central Modas", reason: "Business · cartão recusado", val: "R$ 349", attempt: "2ª tentativa", attemptColor: "#c07f0d" },
-  { i: "R", bg: "#e9e5ff", color: "#6d5cf5", name: "Restaurante Sabor & Cia", reason: "Pro · saldo insuficiente", val: "R$ 149", attempt: "1ª tentativa", attemptColor: "#c07f0d" },
+  { i: "R", bg: "#e9e5ff", color: "#4c2ee0", name: "Restaurante Sabor & Cia", reason: "Pro · saldo insuficiente", val: "R$ 149", attempt: "1ª tentativa", attemptColor: "#c07f0d" },
   { i: "O", bg: "#fef0e6", color: "#e8853a", name: "Ótica Visão Clara", reason: "Pro · cartão expirado", val: "R$ 149", attempt: "3ª tentativa", attemptColor: "#f43f5e" },
 ];
 
@@ -131,8 +131,8 @@ export const cohortRaw: { label: string; cells: (number | null)[] }[] = [
 ];
 
 export const revenueByPlan = [
-  { name: "Business", val: "R$ 20,0k", pct: 95, color: "#6d5cf5" },
-  { name: "Pro", val: "R$ 21,0k", pct: 100, color: "#9d7bff" },
+  { name: "Business", val: "R$ 20,0k", pct: 95, color: "#4c2ee0" },
+  { name: "Pro", val: "R$ 21,0k", pct: 100, color: "#6d4bff" },
   { name: "Starter", val: "R$ 7,2k", pct: 34, color: "#c9b8ff" },
 ];
 
