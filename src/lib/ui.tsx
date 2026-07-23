@@ -231,6 +231,59 @@ export function KpiCard({
   );
 }
 
+// ---- toggle liga/desliga (bolinha desliza, fundo verde ↔ cinza) ----
+export function Toggle({ on, onClick, title }: { on: boolean; onClick?: (e: React.MouseEvent) => void; title?: string }) {
+  return (
+    <div
+      onClick={onClick}
+      title={title}
+      className="toggle"
+      style={{
+        position: "relative",
+        width: 40,
+        height: 22,
+        borderRadius: 20,
+        background: on ? T.green : "#d5d3e4",
+        cursor: onClick ? "pointer" : "default",
+        flexShrink: 0,
+      }}
+    >
+      <span
+        style={{
+          position: "absolute",
+          top: 3,
+          left: on ? 21 : 3,
+          width: 16,
+          height: 16,
+          borderRadius: "50%",
+          background: "#fff",
+          boxShadow: "0 1px 3px rgba(20,17,40,.25)",
+          transition: "left .2s ease",
+        }}
+      />
+    </div>
+  );
+}
+
+// ---- badge do tipo de conta manual (Tester/Cortesia/Parceiro/Interno) ----
+const KIND_BADGE: Record<string, [string, string, string]> = {
+  tester: ["rgba(59,130,246,.12)", "#2563eb", "Tester"],
+  cortesia: ["rgba(16,185,129,.12)", "#059669", "Cortesia"],
+  parceiro: ["rgba(76,46,224,.1)", "#4c2ee0", "Parceiro"],
+  interno: ["rgba(148,163,184,.18)", "#64748b", "Interno"],
+};
+
+export function KindBadge({ kind }: { kind: string }) {
+  const meta = KIND_BADGE[kind];
+  if (!meta) return null;
+  const [bg, col, label] = meta;
+  return (
+    <span style={{ background: bg, color: col, fontSize: 10.5, fontWeight: 700, padding: "2px 8px", borderRadius: 20, flexShrink: 0 }}>
+      {label}
+    </span>
+  );
+}
+
 // ---- primitivos de tabela ----
 export const tableHeadStyle: CSSProperties = {
   fontSize: 11,

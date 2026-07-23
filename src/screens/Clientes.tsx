@@ -1,11 +1,14 @@
+import { useState, type MouseEvent } from "react";
 import { T } from "../theme";
-import { Avatar, Card, Chip, KpiCard, Pill, SearchBox, healthColor, tableHeadStyle } from "../lib/ui";
+import { Avatar, Card, Chip, KindBadge, KpiCard, Pill, SearchBox, Toggle, healthColor, tableHeadStyle } from "../lib/ui";
+import { NewClientDrawer } from "../components/NewClientDrawer";
+import { setClientActive } from "../lib/api";
 import type { CliStatus } from "../data/mock";
 import type { RealCustomer } from "../lib/api";
 
 export type CliFilter = "todos" | "ativos" | "trial" | "ociosos";
 const STATUS_MAP: Record<CliFilter, CliStatus | null> = { todos: null, ativos: "ativo", trial: "trial", ociosos: "ocioso" };
-const grid = "2.2fr 1fr 1fr 1fr 1.1fr 1fr";
+const grid = "2.2fr 1fr 1fr 1fr 1.1fr 1fr 58px";
 const SEG_COLORS = [T.primary, T.primary4, "#b79dff", T.lilac, "#e0d6ff"];
 
 export function Clientes({
@@ -18,6 +21,8 @@ export function Clientes({
   query,
   setQuery,
   onOpen,
+  onCreated,
+  onPatch,
 }: {
   data: RealCustomer[];
   loading: boolean;
@@ -28,7 +33,23 @@ export function Clientes({
   query: string;
   setQuery: (q: string) => void;
   onOpen: (c: RealCustomer) => void;
+  onCreated: (c: RealCustomer) => void;
+  onPatch: (id: string, patch: Partial<RealCustomer>) => void;
 }) {
+  const [openNew, setOpenNew] = useState(false);
+
+  // liga/desliga otimista — reverte se a chamada falhar; não abre o drawer (stopPropagation)
+  async function toggleActive(c: RealCustomer, e: MouseEvent) {
+    e.stopPropagation();
+    const next = !c.active;
+    onPatch(c.id, { active: next });
+    try {
+      await setClientActive(c.id, next);
+    } catch {
+      onPatch(c.id, { active: !next });
+    }
+  }
+
   const q = query.toLowerCase();
   const rows = data
     .filter((c) => (STATUS_MAP[filter] ? c.status === STATUS_MAP[filter] : true))
@@ -119,12 +140,19 @@ export function Clientes({
         <Chip label="Trial" n={count("trial")} active={filter === "trial"} onClick={() => setFilter("trial")} />
         <Chip label="Ociosos" n={count("ocioso")} active={filter === "ociosos"} onClick={() => setFilter("ociosos")} />
         <SearchBox value={query} onChange={setQuery} placeholder="Buscar cliente…" width={260} />
+        <div
+          onClick={() => setOpenNew(true)}
+          className="ml-press ml-btn-primary"
+          style={{ display: "flex", alignItems: "center", gap: 7, height: 40, padding: "0 16px", borderRadius: 11, background: T.primary, color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}
+        >
+          + Novo cliente
+        </div>
       </div>
 
       {/* lista (real) */}
       <Card className="rows" style={{ overflow: "hidden" }}>
         <div style={{ display: "grid", gridTemplateColumns: grid, gap: 8, padding: "13px 22px", ...tableHeadStyle }}>
-          <span>Cliente</span><span>Plano</span><span>Status</span><span>Saúde</span><span>Leads gerados</span><span>Últ. atividade</span>
+          <span>Cliente</span><span>Plano</span><span>Status</span><span>Saúde</span><span>Leads gerados</span><span>Últ. atividade</span><span>Ativo</span>
         </div>
 
         {loading && <div style={{ padding: "40px 22px", textAlign: "center", color: T.faint, fontSize: 13 }}>Carregando clientes…</div>}
@@ -145,7 +173,13 @@ export function Clientes({
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <Avatar letter={c.i} />
-                <div style={{ minWidth: 0 }}><div style={{ fontWeight: 700 }}>{c.name}</div><div style={{ fontSize: 11, color: T.faint }}>{c.city}</div></div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 7, fontWeight: 700 }}>
+                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</span>
+                    {c.kind && <KindBadge kind={c.kind} />}
+                  </div>
+                  <div style={{ fontSize: 11, color: T.faint }}>{c.city}</div>
+                </div>
               </div>
               <span style={{ fontWeight: 700, color: T.primary2 }}>{c.plan}</span>
               <span><Pill kind={c.status} /></span>
@@ -157,6 +191,9 @@ export function Clientes({
               </div>
               <span style={{ fontWeight: 700 }}>{c.leads}</span>
               <span style={{ color: T.body, fontSize: 12.5 }}>{c.lastActive}</span>
+              <span style={{ display: "flex", alignItems: "center" }}>
+                <Toggle on={c.active} onClick={(e) => toggleActive(c, e)} title={c.active ? "Desativar conta" : "Ativar conta"} />
+              </span>
             </div>
           );
         })}
@@ -167,6 +204,14 @@ export function Clientes({
           </div>
         )}
       </Card>
+
+      {/* drawer de cadastro manual */}
+      {openNew && (
+        <NewClientDrawer
+          onClose={() => setOpenNew(false)}
+          onCreated={onCreated}
+        />
+      )}
     </div>
   );
 }

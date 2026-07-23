@@ -1,6 +1,9 @@
 import { supabase } from "./supabase";
 import type { Client } from "../data/mock";
 
+// Tipo de conta criada manualmente pelo admin (não-pagante, sem Stripe).
+export type ClientKind = "tester" | "cortesia" | "parceiro" | "interno";
+
 // Cliente real vindo da edge function admin-list-customers (superset de Client).
 export interface RealCustomer extends Client {
   id: string;
@@ -9,6 +12,8 @@ export interface RealCustomer extends Client {
   planPrice: string;
   createdAt: string;
   idleDays: number;
+  kind: ClientKind | null; // null = conta normal (pagante)
+  active: boolean;
 }
 
 export interface CustomerCounts {
@@ -52,6 +57,35 @@ export async function getIntegrationsHealth(): Promise<{ integrations: Integrati
   const { data, error } = await supabase.functions.invoke("admin-integrations-health", { body: {} });
   if (error) throw new Error(await readFnError(error));
   return data as { integrations: IntegrationHealth[]; operational: number; total: number };
+}
+
+// POST /api/admin/clients → edge function admin-clients {action:"create"}
+export interface NewClientPayload {
+  name: string;
+  email: string;
+  phone?: string;
+  city?: string;
+  cnpj?: string;
+  plan: "starter" | "pro" | "business";
+  kind: ClientKind;
+  sendInvite: boolean;
+  password?: string;
+  active: boolean;
+}
+
+export async function createManualClient(
+  payload: NewClientPayload,
+): Promise<{ ok: boolean; inviteSent: boolean; inviteLink: string | null; customer: RealCustomer }> {
+  const { data, error } = await supabase.functions.invoke("admin-clients", { body: { action: "create", ...payload } });
+  if (error) throw new Error(await readFnError(error));
+  return data as { ok: boolean; inviteSent: boolean; inviteLink: string | null; customer: RealCustomer };
+}
+
+// PATCH /api/admin/clients/:id/active → edge function admin-clients {action:"set_active"}
+export async function setClientActive(accountId: string, active: boolean): Promise<void> {
+  const { data, error } = await supabase.functions.invoke("admin-clients", { body: { action: "set_active", accountId, active } });
+  if (error) throw new Error(await readFnError(error));
+  if (!(data as { ok?: boolean })?.ok) throw new Error("update_failed");
 }
 
 export async function customerAction(

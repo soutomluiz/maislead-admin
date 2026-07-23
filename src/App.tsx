@@ -147,6 +147,8 @@ function Panel() {
               query={cliQuery}
               setQuery={setCliQuery}
               onOpen={setOpenCli}
+              onCreated={(c) => setCustomers((prev) => [c, ...prev])}
+              onPatch={(id, patch) => setCustomers((prev) => prev.map((x) => (x.id === id ? { ...x, ...patch } : x)))}
             />
           )}
           {screen === "financeiro" && <Financeiro />}
