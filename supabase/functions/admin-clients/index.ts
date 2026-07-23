@@ -38,8 +38,8 @@ async function requireAdmin(req: Request) {
 }
 
 const KINDS = ["tester", "cortesia", "parceiro", "interno"] as const;
-const PLANS = ["starter", "pro", "business"] as const;
-const PLAN_LABEL: Record<string, string> = { starter: "Starter", pro: "Pro", business: "Business" };
+const PLANS = ["free", "starter", "pro", "business"] as const;
+const PLAN_LABEL: Record<string, string> = { free: "Free", starter: "Starter", pro: "Pro", business: "Business" };
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 interface CreateBody {
