@@ -52,7 +52,7 @@ export function Clientes({
   const segTotal = data.length || 1;
 
   return (
-    <div>
+    <div className="screen">
       {/* KPIs (reais) */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 13, marginBottom: 16 }}>
         <KpiCard label="Total de clientes" value={loading ? "…" : String(total)} />
@@ -122,7 +122,7 @@ export function Clientes({
       </div>
 
       {/* lista (real) */}
-      <Card style={{ overflow: "hidden" }}>
+      <Card className="rows" style={{ overflow: "hidden" }}>
         <div style={{ display: "grid", gridTemplateColumns: grid, gap: 8, padding: "13px 22px", ...tableHeadStyle }}>
           <span>Cliente</span><span>Plano</span><span>Status</span><span>Saúde</span><span>Leads gerados</span><span>Últ. atividade</span>
         </div>

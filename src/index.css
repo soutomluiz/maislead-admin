@@ -21,12 +21,14 @@ body {
   background: #d9d6ea;
   border-radius: 5px;
 }
-/* hover das linhas de tabela clicáveis */
+/* hover das linhas de tabela clicáveis (lift leve + sombra, SPEC §5) */
 .ml-row:hover {
   background: #faf9fe;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30, 25, 60, 0.08);
 }
 
-/* ponto verde "Ao vivo" (único keyframe do protótipo) */
+/* ponto verde "Ao vivo" (mantido — SPEC §6) */
 @keyframes livedot {
   0% {
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5);
@@ -37,4 +39,52 @@ body {
   100% {
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
   }
+}
+
+/* ===== Sistema de animações (SPEC-admin-animacoes) ===== */
+
+/* §1 — keyframes, curva padrão cubic-bezier(.22,.61,.36,1) */
+@keyframes fadeUp    { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes drawerIn  { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes popIn     { from { opacity: 0; transform: scale(.96) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+/* §2 — entrada de tela (re-dispara a cada troca de módulo via key no App) */
+.screen { animation: fadeUp .42s cubic-bezier(.22, .61, .36, 1) both; }
+.screen > * { animation: fadeUp .5s cubic-bezier(.22, .61, .36, 1) both; }
+.screen > *:nth-child(1) { animation-delay: .02s; }
+.screen > *:nth-child(2) { animation-delay: .08s; }
+.screen > *:nth-child(3) { animation-delay: .14s; }
+.screen > *:nth-child(4) { animation-delay: .20s; }
+.screen > *:nth-child(5) { animation-delay: .26s; }
+.screen > *:nth-child(6) { animation-delay: .32s; }
+.screen > *:nth-child(n+7) { animation-delay: .36s; }
+
+/* §3 — linhas de tabela em cascata */
+.rows > * { animation: fadeUp .4s ease both; }
+.rows > *:nth-child(2) { animation-delay: .03s; }
+.rows > *:nth-child(3) { animation-delay: .06s; }
+.rows > *:nth-child(4) { animation-delay: .09s; }
+.rows > *:nth-child(5) { animation-delay: .12s; }
+.rows > *:nth-child(6) { animation-delay: .15s; }
+.rows > *:nth-child(7) { animation-delay: .18s; }
+.rows > *:nth-child(n+8) { animation-delay: .21s; }
+
+/* §4 — drawers: overlay em fade, painel desliza da direita */
+.ml-overlay { animation: overlayIn .22s ease both; }
+.ml-drawer  { animation: drawerIn .34s cubic-bezier(.22, .61, .36, 1) both; }
+/* §6 — modais menores (confirmações) */
+.ml-pop { animation: popIn .3s cubic-bezier(.22, .61, .36, 1) both; }
+
+/* §5 — transições em elementos interativos (inclui divs clicáveis via .ml-press) */
+button, input, select, a, .nav-item, .toggle, .ml-row, .ml-press {
+  transition: background .18s ease, color .18s ease, border-color .18s ease,
+              box-shadow .2s ease, transform .18s ease;
+}
+/* botão primário escurece no hover (#4c2ee0 → #3f24c4) */
+.ml-btn-primary:hover { background: #3f24c4 !important; }
+
+/* §7 — acessibilidade: desliga tudo */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
 }

@@ -130,7 +130,8 @@ function Panel() {
 
       <main style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
         <Topbar title={title} subtitle={subtitle} search={cliQuery} onSearch={onTopSearch} />
-        <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "24px 26px" }}>
+        {/* key={screen}: força remount na troca de módulo → re-dispara a animação de entrada (SPEC §2) */}
+        <div key={screen} style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "24px 26px" }}>
           {screen === "visao" && <VisaoGeral onNavigate={setScreen} leadsProcessed={leadsProcessed} idle={idle} />}
           {screen === "assinaturas" && (
             <Assinaturas filter={subFilter} setFilter={setSubFilter} query={subQuery} setQuery={setSubQuery} onOpen={setOpenSub} />

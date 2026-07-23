@@ -118,7 +118,7 @@ export function VisaoGeral({
   const idleRows = idle && idle.length ? idle : MOCK_IDLE;
   const leadsValue = leadsProcessed != null ? leadsProcessed.toLocaleString("pt-BR") : "1,24 mi";
   return (
-    <div>
+    <div className="screen">
       {/* KPIs */}
       <div
         style={{
@@ -345,6 +345,7 @@ export function VisaoGeral({
           <div style={sectionTitle}>Assinaturas recentes</div>
           <span
             onClick={() => onNavigate("assinaturas")}
+            className="ml-press"
             style={{ fontSize: 12.5, color: T.primary, fontWeight: 700, cursor: "pointer" }}
           >
             Ver todas →

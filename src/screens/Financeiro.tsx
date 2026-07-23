@@ -6,7 +6,7 @@ const payGrid = "2fr 1fr 1fr 1fr 1fr";
 
 export function Financeiro() {
   return (
-    <div>
+    <div className="screen">
       {/* resumo */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 13, marginBottom: 16 }}>
         <KpiCard label="Receita bruta (mês)" value="R$ 63,5k" delta="▲ 12,4% vs junho" gradient />
@@ -75,7 +75,7 @@ export function Financeiro() {
             <div style={{ fontSize: 15, fontWeight: 800 }}>Pagamentos de clientes</div>
             <div style={{ fontSize: 12, color: T.muted, marginTop: 2 }}>Entradas recentes via Stripe</div>
           </div>
-          <span style={{ fontSize: 12.5, color: T.primary, fontWeight: 700, cursor: "pointer" }}>Exportar CSV →</span>
+          <span className="ml-press" style={{ fontSize: 12.5, color: T.primary, fontWeight: 700, cursor: "pointer" }}>Exportar CSV →</span>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: payGrid, gap: 8, padding: "12px 22px", ...tableHeadStyle }}>
           <span>Cliente</span><span>Valor</span><span>Método</span><span>Data</span><span>Status</span>
@@ -112,7 +112,7 @@ export function Financeiro() {
             <div style={{ flex: 1 }}><div style={{ fontWeight: 700 }}>{d.name}</div><div style={{ fontSize: 11, color: T.faint }}>{d.reason}</div></div>
             <span style={{ fontWeight: 800, marginRight: 14 }}>{d.val}</span>
             <span style={{ fontSize: 11, color: d.attemptColor, fontWeight: 700, marginRight: 14 }}>{d.attempt}</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: T.primary, cursor: "pointer", background: "rgba(76,46,224,.1)", padding: "6px 12px", borderRadius: 9 }}>Reprocessar</span>
+            <span className="ml-press" style={{ fontSize: 12, fontWeight: 700, color: T.primary, cursor: "pointer", background: "rgba(76,46,224,.1)", padding: "6px 12px", borderRadius: 9 }}>Reprocessar</span>
           </div>
         ))}
       </div>

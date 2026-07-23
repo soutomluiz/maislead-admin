@@ -79,6 +79,7 @@ function NavItem({
   return (
     <div
       onClick={onClick}
+      className="nav-item"
       style={{
         display: "flex",
         alignItems: "center",
@@ -216,6 +217,7 @@ export function Sidebar({
         <div
           onClick={onLogout}
           title="Sair"
+          className="ml-press"
           style={{ width: 30, height: 30, borderRadius: 9, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: T.muted }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

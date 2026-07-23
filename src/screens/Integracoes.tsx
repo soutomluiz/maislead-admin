@@ -11,7 +11,7 @@ export function Integracoes({ data, loading, error }: { data: IntegrationHealth[
     );
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 14 }}>
+    <div className="screen" style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 14 }}>
       {data.map((it) => (
         <div
           key={it.name}

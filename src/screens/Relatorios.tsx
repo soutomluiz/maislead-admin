@@ -63,7 +63,7 @@ export function Relatorios({
   const maxPlan = Math.max(1, ...byPlan.map((b) => b.n));
 
   return (
-    <div>
+    <div className="screen">
       {/* barra de período + export */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
         <div style={{ display: "flex", gap: 4, background: "#fff", border: `1px solid ${T.border}`, borderRadius: 12, padding: 4 }}>
@@ -71,6 +71,7 @@ export function Relatorios({
             <span
               key={p}
               onClick={() => setPeriod(p)}
+              className="ml-press"
               style={{ fontSize: 12.5, fontWeight: 700, padding: "7px 14px", borderRadius: 9, cursor: "pointer", background: period === p ? T.primary : "transparent", color: period === p ? "#fff" : T.muted }}
             >
               {label}
@@ -80,6 +81,7 @@ export function Relatorios({
         <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
           <span
             onClick={() => exportCsv(customers)}
+            className="ml-press ml-btn-primary"
             style={{ fontSize: 12.5, fontWeight: 700, color: "#fff", background: T.primary, padding: "9px 14px", borderRadius: 10, cursor: "pointer" }}
           >
             Exportar CSV

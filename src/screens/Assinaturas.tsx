@@ -27,7 +27,7 @@ export function Assinaturas({
   const count = (st: SubStatus) => subsRaw.filter((s) => s.status === st).length;
 
   return (
-    <div>
+    <div className="screen">
       {/* KPIs */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 13, marginBottom: 16 }}>
         <KpiCard label="MRR de assinaturas" value="R$ 48,2k" delta="▲ 12,4% vs junho" deltaColor={T.greenD} />
@@ -46,7 +46,7 @@ export function Assinaturas({
       </div>
 
       {/* tabela */}
-      <Card style={{ overflow: "hidden" }}>
+      <Card className="rows" style={{ overflow: "hidden" }}>
         <div style={{ display: "grid", gridTemplateColumns: grid, gap: 8, padding: "13px 22px", ...tableHeadStyle }}>
           <span>Cliente</span><span>Plano</span><span>Status</span><span>MRR</span><span>Ciclo</span><span>Próx. cobrança</span>
         </div>

@@ -32,13 +32,14 @@ function Action({
     ghost: { background: "#fff", border: `1px solid ${T.border}`, color: T.body },
     danger: { background: "#fff", border: "1px solid #f5d0d6", color: T.redD },
   };
-  return <div style={{ ...base, ...styles[variant] }}>{children}</div>;
+  return <div className={variant === "primary" ? "ml-press ml-btn-primary" : "ml-press"} style={{ ...base, ...styles[variant] }}>{children}</div>;
 }
 
 export function SubscriptionDrawer({ sub, onClose }: { sub: Sub; onClose: () => void }) {
   return (
     <div
       onClick={onClose}
+      className="ml-overlay"
       style={{
         position: "absolute",
         inset: 0,
@@ -50,6 +51,7 @@ export function SubscriptionDrawer({ sub, onClose }: { sub: Sub; onClose: () => 
     >
       <div
         onClick={(e) => e.stopPropagation()}
+        className="ml-drawer"
         style={{
           width: 440,
           maxWidth: "92vw",
@@ -69,6 +71,7 @@ export function SubscriptionDrawer({ sub, onClose }: { sub: Sub; onClose: () => 
             </span>
             <div
               onClick={onClose}
+              className="ml-press"
               style={{ width: 32, height: 32, borderRadius: 9, background: "#f4f2fb", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
             >
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T.body} strokeWidth="2.2">

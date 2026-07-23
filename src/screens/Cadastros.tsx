@@ -19,7 +19,7 @@ export function Cadastros({ customers, loading, error }: { customers: RealCustom
   const recent = [...customers].sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)).slice(0, 10);
 
   return (
-    <div>
+    <div className="screen">
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 13, marginBottom: 16 }}>
         <KpiCard label="Cadastros no mês" value={loading ? "…" : String(thisMonth.length)} />
         <KpiCard label="Em trial agora" value={loading ? "…" : String(trialNow)} delta="contas em avaliação" deltaColor={T.amberD} />

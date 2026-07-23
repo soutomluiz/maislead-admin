@@ -34,7 +34,7 @@ function ActionBtn({
     danger: { background: "#fff", border: "1px solid #f5d0d6", color: T.redD },
   };
   return (
-    <div style={{ ...base, ...styles[variant] }} onClick={disabled ? undefined : onClick}>
+    <div className={variant === "primary" ? "ml-press ml-btn-primary" : "ml-press"} style={{ ...base, ...styles[variant] }} onClick={disabled ? undefined : onClick}>
       {children}
     </div>
   );
@@ -100,17 +100,19 @@ export function CustomerDrawer({
   return (
     <div
       onClick={onClose}
+      className="ml-overlay"
       style={{ position: "absolute", inset: 0, zIndex: 60, background: "rgba(20,17,40,.45)", display: "flex", justifyContent: "flex-end" }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
+        className="ml-drawer"
         style={{ width: 460, maxWidth: "92vw", height: "100%", background: "#faf9fc", boxShadow: T.shadowDrawer, display: "flex", flexDirection: "column", overflowY: "auto" }}
       >
         {/* header */}
         <div style={{ padding: "22px 24px 20px", background: "#fff", borderBottom: "1px solid #eeedf6" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: T.faint, letterSpacing: ".05em", textTransform: "uppercase" }}>Conta do cliente</span>
-            <div onClick={onClose} style={{ width: 32, height: 32, borderRadius: 9, background: "#f4f2fb", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+            <div onClick={onClose} className="ml-press" style={{ width: 32, height: 32, borderRadius: 9, background: "#f4f2fb", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={T.body} strokeWidth="2.2"><path d="M18 6 6 18M6 6l12 12" /></svg>
             </div>
           </div>
