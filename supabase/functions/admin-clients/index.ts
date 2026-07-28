@@ -90,7 +90,7 @@ async function sendInviteEmail(email: string, name: string, link: string): Promi
     <!-- FAIXA SUPERIOR / LOGO -->
     <tr>
       <td align="center" bgcolor="#4c2ee0" style="background-color:#4c2ee0;padding:34px 40px 30px;" class="px">
-        <img src="https://ddndpnibptrvurabacgi.supabase.co/storage/v1/object/public/assets/logo.png" alt="maisLEAD" width="180" style="display:block;border:0;">
+        <img src="https://ddndpnibptrvurabacgi.supabase.co/storage/v1/object/public/assets/logo-white-email.png" alt="maisLEAD" width="180" style="display:block;border:0;">
       </td>
     </tr>
 
