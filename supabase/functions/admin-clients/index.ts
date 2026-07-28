@@ -58,14 +58,149 @@ async function sendInviteEmail(email: string, name: string, link: string): Promi
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
     body: JSON.stringify({
       from, to: [email],
-      subject: "Sua conta na maisLEAD está pronta — defina sua senha",
-      html: `<div style="font-family:sans-serif;max-width:520px;margin:0 auto">
-        <h2 style="color:#4c2ee0">maisLEAD</h2>
-        <p>Olá${name ? `, <b>${name}</b>` : ""}!</p>
-        <p>Sua conta na maisLEAD foi criada. Clique no botão abaixo para definir sua senha e começar a usar:</p>
-        <p style="margin:24px 0"><a href="${link}" style="background:#4c2ee0;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:700">Definir minha senha</a></p>
-        <p style="color:#888;font-size:12px">Se você não esperava este e-mail, pode ignorá-lo.</p>
-      </div>`,
+      subject: "Bem-vindo à maisLEAD — crie sua senha",
+      html: `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Bem-vindo à maisLEAD</title>
+<!--[if mso]>
+<xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml>
+<![endif]-->
+<style>
+  @media only screen and (max-width:620px){
+    .wrap{width:100%!important;}
+    .px{padding-left:24px!important;padding-right:24px!important;}
+    .h1{font-size:26px!important;line-height:32px!important;}
+    .stepnum{width:34px!important;}
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f2fb;">
+<span style="display:none;font-size:1px;color:#f4f2fb;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">Sua conta maisLEAD está pronta. Crie sua senha e comece a encontrar leads B2B hoje mesmo.</span>
+
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#f4f2fb;">
+<tr><td align="center" style="padding:32px 12px;">
+
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" class="wrap" style="width:600px;max-width:600px;background-color:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 2px 14px rgba(40,25,90,.06);">
+
+    <!-- FAIXA SUPERIOR / LOGO -->
+    <tr>
+      <td align="center" bgcolor="#4c2ee0" style="background-color:#4c2ee0;padding:34px 40px 30px;" class="px">
+        <img src="https://ddndpnibptrvurabacgi.supabase.co/storage/v1/object/public/assets/logo.png" alt="maisLEAD" width="180" style="display:block;border:0;">
+      </td>
+    </tr>
+
+    <!-- SAUDAÇÃO -->
+    <tr>
+      <td style="padding:40px 40px 0;" class="px">
+        <div class="h1" style="font-family:Arial,Helvetica,sans-serif;font-size:29px;line-height:36px;mso-line-height-rule:exactly;font-weight:bold;color:#1c1636;letter-spacing:-.4px;">Olá, ${name} 👋</div>
+        <div style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:26px;mso-line-height-rule:exactly;color:#56526e;padding-top:14px;">
+          Sua conta foi criada. Falta só um passo: crie sua senha para acessar e começar a gerar listas de leads qualificados.
+        </div>
+      </td>
+    </tr>
+
+    <!-- BOTÃO -->
+    <tr>
+      <td align="center" style="padding:28px 40px 10px;" class="px">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;">
+          <tr>
+            <td align="center" bgcolor="#4c2ee0" style="background-color:#4c2ee0;border-radius:12px;">
+              <a href="${link}" style="display:block;padding:17px 28px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:20px;mso-line-height-rule:exactly;font-weight:bold;color:#ffffff;text-decoration:none;border-radius:12px;">Definir minha senha &nbsp;&rarr;</a>
+            </td>
+          </tr>
+        </table>
+        <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;mso-line-height-rule:exactly;color:#6f6a8c;padding-top:12px;">Por segurança, este link é pessoal e tem validade limitada.</div>
+      </td>
+    </tr>
+
+    <!-- DIVISOR -->
+    <tr><td style="padding:26px 40px 0;" class="px"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td height="1" style="height:1px;line-height:1px;font-size:0;background-color:#eceaf6;">&nbsp;</td></tr></table></td></tr>
+
+    <!-- O QUE FAZER PRIMEIRO -->
+    <tr>
+      <td style="padding:26px 40px 0;" class="px">
+        <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:16px;mso-line-height-rule:exactly;font-weight:bold;color:#6f6a8c;letter-spacing:1.2px;text-transform:uppercase;padding-bottom:16px;">Seus primeiros passos</div>
+
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;">
+          <tr>
+            <td width="40" valign="top" class="stepnum" style="width:40px;padding-bottom:18px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="28"><tr><td align="center" width="28" height="28" bgcolor="#efecfd" style="width:28px;height:28px;background-color:#efecfd;border-radius:8px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:28px;mso-line-height-rule:exactly;font-weight:bold;color:#4c2ee0;">1</td></tr></table>
+            </td>
+            <td valign="top" style="padding-bottom:18px;">
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:21px;mso-line-height-rule:exactly;font-weight:bold;color:#1c1636;">Busque no Google Maps</div>
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;mso-line-height-rule:exactly;color:#56526e;padding-top:3px;">Digite nicho + cidade (ex.: "restaurantes em Curitiba") e receba nome, telefone, site e avaliação.</div>
+            </td>
+          </tr>
+          <tr>
+            <td width="40" valign="top" class="stepnum" style="width:40px;padding-bottom:18px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="28"><tr><td align="center" width="28" height="28" bgcolor="#efecfd" style="width:28px;height:28px;background-color:#efecfd;border-radius:8px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:28px;mso-line-height-rule:exactly;font-weight:bold;color:#4c2ee0;">2</td></tr></table>
+            </td>
+            <td valign="top" style="padding-bottom:18px;">
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:21px;mso-line-height-rule:exactly;font-weight:bold;color:#1c1636;">Filtre pela base da Receita</div>
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;mso-line-height-rule:exactly;color:#56526e;padding-top:3px;">Monte listas por CNAE, porte e situação — ou encontre empresas recém-abertas na sua região.</div>
+            </td>
+          </tr>
+          <tr>
+            <td width="40" valign="top" class="stepnum" style="width:40px;padding-bottom:18px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="28"><tr><td align="center" width="28" height="28" bgcolor="#efecfd" style="width:28px;height:28px;background-color:#efecfd;border-radius:8px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:28px;mso-line-height-rule:exactly;font-weight:bold;color:#4c2ee0;">3</td></tr></table>
+            </td>
+            <td valign="top" style="padding-bottom:18px;">
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:21px;mso-line-height-rule:exactly;font-weight:bold;color:#1c1636;">Trabalhe seus leads no CRM</div>
+              <div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;mso-line-height-rule:exactly;color:#56526e;padding-top:3px;">Cada lead recebe uma pontuação de 0 a 100. Arraste pelo funil, chame no WhatsApp e agende o follow-up.</div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- DICA -->
+    <tr>
+      <td style="padding:8px 40px 0;" class="px">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;background-color:#f7f5ff;border-radius:12px;">
+          <tr>
+            <td style="padding:16px 18px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;mso-line-height-rule:exactly;color:#453f66;">
+              <strong style="color:#4c2ee0;">Dica:</strong> preencha o nome da sua empresa no perfil. Ele entra automaticamente nas mensagens de WhatsApp que você dispara para os leads.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- LINK ALTERNATIVO -->
+    <tr>
+      <td style="padding:26px 40px 34px;" class="px">
+        <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:20px;mso-line-height-rule:exactly;color:#6f6a8c;">
+          O botão não funcionou? Copie e cole este endereço no navegador:<br>
+          <a href="${link}" style="color:#4c2ee0;text-decoration:underline;word-break:break-all;">${link}</a>
+        </div>
+      </td>
+    </tr>
+
+    <!-- RODAPÉ -->
+    <tr>
+      <td bgcolor="#faf9fe" style="background-color:#faf9fe;padding:24px 40px 28px;border-top:1px solid #eceaf6;" class="px">
+        <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:21px;mso-line-height-rule:exactly;color:#56526e;">
+          Precisa de ajuda? Responda este e-mail — a gente lê todas.
+        </div>
+        <div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:19px;mso-line-height-rule:exactly;color:#6f6a8c;padding-top:14px;">
+          Você recebeu este e-mail porque uma conta maisLEAD foi criada para você.<br>
+          maisLEAD — Atlanta, GA<br>
+          <a href="https://maislead.com" style="color:#7a74a0;text-decoration:underline;">maislead.com</a> &nbsp;·&nbsp; <a href="mailto:contato@maislead.com?subject=Cancelar%20inscri%C3%A7%C3%A3o" style="color:#7a74a0;text-decoration:underline;">Cancelar inscrição</a>
+        </div>
+      </td>
+    </tr>
+
+  </table>
+
+</td></tr>
+</table>
+</body>
+</html>`,
     }),
   });
   return res.ok;
