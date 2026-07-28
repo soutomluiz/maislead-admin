@@ -7,6 +7,9 @@
 //        Senha nunca em texto puro: quem grava é o GoTrue do Supabase (hash bcrypt interno).
 //   { action: "set_active", accountId, active }
 //     -> accounts.active + ban/unban do usuário dono (mesmo mecanismo do suspend), audit.
+//   { action: "delete", accountId, confirmName }
+//     -> EXCLUSÃO DEFINITIVA em cascata (filho->pai). Exige confirmName == accounts.name;
+//        recusa se algum membro for platform_admin ou o próprio chamador; audit ANTES de apagar.
 //
 // Segredos: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY (auto),
 //           RESEND_API_KEY / RESEND_FROM (opcionais — sem eles o convite volta como link).
@@ -46,7 +49,7 @@ interface CreateBody {
   action?: string;
   name?: string; email?: string; phone?: string; city?: string; cnpj?: string;
   plan?: string; kind?: string; sendInvite?: boolean; password?: string; active?: boolean;
-  accountId?: string;
+  accountId?: string; confirmName?: string;
 }
 
 async function sendInviteEmail(email: string, name: string, link: string): Promise<boolean> {
@@ -327,6 +330,93 @@ Deno.serve(async (req) => {
 
       await audit("set_client_active", accountId, { active });
       return json(200, { ok: true, active });
+    }
+
+    // ============ EXCLUIR CLIENTE (CASCATA) ============
+    if (action === "delete") {
+      const accountId = (body.accountId ?? "").trim();
+      const confirmName = body.confirmName ?? "";
+      if (!accountId) return json(400, { error: "missing_account" });
+
+      // conta + nome oficial
+      const { data: acc, error: accErr } = await admin
+        .from("accounts").select("id, name").eq("id", accountId).maybeSingle();
+      if (accErr) return json(500, { error: "delete_failed", step: "load_account", message: accErr.message });
+      if (!acc) return json(404, { error: "account_not_found" });
+
+      // (2) proteção anti-acidente: o nome digitado tem que bater exatamente
+      if (confirmName.trim() !== (acc.name ?? "").trim()) {
+        return json(400, { error: "name_mismatch" });
+      }
+
+      // membros da conta (profiles.id == auth user id)
+      const { data: members, error: memErr } = await admin
+        .from("profiles").select("id").eq("account_id", accountId);
+      if (memErr) return json(500, { error: "delete_failed", step: "load_members", message: memErr.message });
+      const memberIds = (members ?? []).map((m) => m.id as string);
+
+      // (3) proteção anti-suicídio: não apagar a si mesmo nem um platform_admin
+      if (memberIds.includes(user.id)) return json(403, { error: "cannot_delete_admin" });
+      if (memberIds.length) {
+        const { data: admins } = await admin
+          .from("platform_admins").select("user_id").in("user_id", memberIds);
+        if (admins && admins.length) return json(403, { error: "cannot_delete_admin" });
+      }
+
+      // contagens (para o retorno / auditoria)
+      const { count: leadsCount } = await admin
+        .from("leads").select("id", { count: "exact", head: true }).eq("account_id", accountId);
+      const { count: searchesCount } = await admin
+        .from("searches").select("id", { count: "exact", head: true }).eq("account_id", accountId);
+      const leads = leadsCount ?? 0;
+      const searches = searchesCount ?? 0;
+
+      // (5) registra a auditoria ANTES de apagar qualquer coisa
+      await audit("delete_client", accountId, {
+        name: acc.name, id: accountId, leads, searches, members: memberIds.length,
+      });
+
+      // (4) cascata na ordem filho -> pai. Pára na 1ª etapa que falhar, dizendo qual.
+      const step = async (label: string, run: () => Promise<{ error: { message: string } | null }>) => {
+        const { error } = await run();
+        if (error) throw { step: label, message: error.message };
+      };
+      const delBy = (table: string, col: string, val: string) =>
+        admin.from(table).delete().eq(col, val);
+
+      try {
+        // filhos de leads (também ligados por account_id)
+        await step("lead_events", () => delBy("lead_events", "account_id", accountId));
+        await step("lead_activities", () => delBy("lead_activities", "account_id", accountId));
+        await step("lead_documents", () => delBy("lead_documents", "account_id", accountId));
+        await step("lead_links", () => delBy("lead_links", "account_id", accountId));
+        await step("appointments", () => delBy("appointments", "account_id", accountId));
+        // leads (cascateia lead_notes/lead_tags por lead_id) e demais tabelas com account_id
+        await step("leads", () => delBy("leads", "account_id", accountId));
+        await step("searches", () => delBy("searches", "account_id", accountId));
+        await step("email_campaigns", () => delBy("email_campaigns", "account_id", accountId));
+        await step("email_templates", () => delBy("email_templates", "account_id", accountId));
+        await step("integrations", () => delBy("integrations", "account_id", accountId));
+        // ligadas por user_id (sem cascade da account) — limpa órfãos dos membros
+        if (memberIds.length) {
+          await step("notifications", () => admin.from("notifications").delete().in("user_id", memberIds));
+          await step("user_roles", () => admin.from("user_roles").delete().in("user_id", memberIds));
+        }
+        // profiles antes dos usuários no auth
+        await step("profiles", () => delBy("profiles", "account_id", accountId));
+        // usuários no auth (um por membro)
+        for (const uid of memberIds) {
+          const { error: dErr } = await admin.auth.admin.deleteUser(uid);
+          if (dErr) throw { step: `auth_user:${uid}`, message: dErr.message };
+        }
+        // por fim, a própria account (cascade final cobre qualquer resíduo com account_id)
+        await step("account", () => delBy("accounts", "id", accountId));
+      } catch (e) {
+        const err = e as { step?: string; message?: string };
+        return json(500, { error: "delete_failed", step: err.step ?? "unknown", message: err.message ?? String(e) });
+      }
+
+      return json(200, { ok: true, deleted: { leads, searches, members: memberIds.length } });
     }
 
     return json(400, { error: "unknown_action" });

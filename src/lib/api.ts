@@ -88,6 +88,20 @@ export async function setClientActive(accountId: string, active: boolean): Promi
   if (!(data as { ok?: boolean })?.ok) throw new Error("update_failed");
 }
 
+// DELETE (cascata) → edge function admin-clients {action:"delete"}
+// A exclusão SÓ acontece pela edge function (nunca direto pelo supabase client no front).
+export interface DeleteResult {
+  ok: boolean;
+  deleted: { leads: number; searches: number; members: number };
+}
+export async function deleteClient(accountId: string, confirmName: string): Promise<DeleteResult> {
+  const { data, error } = await supabase.functions.invoke("admin-clients", {
+    body: { action: "delete", accountId, confirmName },
+  });
+  if (error) throw new Error(await readFnError(error)); // pode ser "name_mismatch" | "cannot_delete_admin"
+  return data as DeleteResult;
+}
+
 export async function customerAction(
   action: "impersonate" | "suspend" | "unsuspend",
   args: { accountId?: string; userId?: string | null; email?: string },

@@ -75,6 +75,14 @@ function Panel() {
   // Relatórios (mock)
   const [period, setPeriod] = useState<Period>("30d");
 
+  // toast global (feedback de ações destrutivas)
+  const [toast, setToast] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
+  useEffect(() => {
+    if (!toast) return;
+    const id = setTimeout(() => setToast(null), 4500);
+    return () => clearTimeout(id);
+  }, [toast]);
+
   const load = useCallback(async (initial: boolean) => {
     try {
       const r = await listCustomers();
@@ -167,7 +175,37 @@ function Panel() {
             setOpenCli(null);
             setScreen("assinaturas");
           }}
+          onDeleted={(id, deleted) => {
+            setCustomers((prev) => prev.filter((x) => x.id !== id)); // some da lista → KPIs do topo recalculam
+            setLeadsProcessed((prev) => (prev === null ? prev : Math.max(0, prev - deleted.leads)));
+            setOpenCli(null);
+            setToast({
+              kind: "ok",
+              text: `Conta excluída — ${deleted.leads.toLocaleString("pt-BR")} leads e ${deleted.searches.toLocaleString("pt-BR")} buscas removidos.`,
+            });
+          }}
         />
+      )}
+
+      {toast && (
+        <div
+          onClick={() => setToast(null)}
+          className="ml-pop"
+          style={{
+            position: "fixed", right: 22, bottom: 22, zIndex: 90, maxWidth: 380,
+            display: "flex", alignItems: "center", gap: 11, padding: "13px 16px",
+            borderRadius: 13, cursor: "pointer",
+            background: "#fff", border: `1px solid ${toast.kind === "ok" ? "#c9ecd8" : "#fbd5da"}`,
+            boxShadow: "0 10px 30px rgba(30,25,60,.16)",
+          }}
+        >
+          <div style={{ width: 26, height: 26, borderRadius: 8, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: toast.kind === "ok" ? "rgba(16,185,129,.12)" : "rgba(244,63,94,.12)" }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={toast.kind === "ok" ? T.greenD : T.redD} strokeWidth="2.4">
+              {toast.kind === "ok" ? <path d="M20 6 9 17l-5-5" /> : <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>}
+            </svg>
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: T.body, lineHeight: "19px" }}>{toast.text}</div>
+        </div>
       )}
     </div>
   );
