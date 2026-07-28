@@ -1,4 +1,5 @@
 import { useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import { T } from "../theme";
 import { Pill, healthColor } from "../lib/ui";
 import { customerAction, type RealCustomer } from "../lib/api";
@@ -97,11 +98,11 @@ export function CustomerDrawer({
     }
   }
 
-  return (
+  return createPortal(
     <div
       onClick={onClose}
       className="ml-overlay"
-      style={{ position: "absolute", inset: 0, zIndex: 60, background: "rgba(20,17,40,.45)", display: "flex", justifyContent: "flex-end" }}
+      style={{ position: "fixed", inset: 0, zIndex: 60, background: "rgba(20,17,40,.45)", display: "flex", justifyContent: "flex-end" }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -187,6 +188,7 @@ export function CustomerDrawer({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

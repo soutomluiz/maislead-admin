@@ -1,4 +1,5 @@
 import { useState, type CSSProperties, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { T } from "../theme";
 import { Toggle } from "../lib/ui";
 import { createManualClient, type ClientKind, type NewClientPayload, type RealCustomer } from "../lib/api";
@@ -100,11 +101,11 @@ export function NewClientDrawer({
     borderRadius: 14, padding: "13px 14px", cursor: "pointer",
   });
 
-  return (
+  return createPortal(
     <div
       onClick={onClose}
       className="ml-overlay"
-      style={{ position: "absolute", inset: 0, zIndex: 60, background: "rgba(20,17,40,.45)", display: "flex", justifyContent: "flex-end" }}
+      style={{ position: "fixed", inset: 0, zIndex: 60, background: "rgba(20,17,40,.45)", display: "flex", justifyContent: "flex-end" }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -255,6 +256,7 @@ export function NewClientDrawer({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

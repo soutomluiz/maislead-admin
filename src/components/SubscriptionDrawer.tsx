@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import { T } from "../theme";
 import { Pill } from "../lib/ui";
 import type { Sub } from "../data/mock";
@@ -36,12 +37,12 @@ function Action({
 }
 
 export function SubscriptionDrawer({ sub, onClose }: { sub: Sub; onClose: () => void }) {
-  return (
+  return createPortal(
     <div
       onClick={onClose}
       className="ml-overlay"
       style={{
-        position: "absolute",
+        position: "fixed",
         inset: 0,
         zIndex: 60,
         background: "rgba(20,17,40,.45)",
@@ -151,6 +152,7 @@ export function SubscriptionDrawer({ sub, onClose }: { sub: Sub; onClose: () => 
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
