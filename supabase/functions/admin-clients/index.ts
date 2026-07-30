@@ -376,7 +376,11 @@ Deno.serve(async (req) => {
         name: acc.name, id: accountId, leads, searches, members: memberIds.length,
       });
 
-      // (4) cascata na ordem filho -> pai. Pára na 1ª etapa que falhar, dizendo qual.
+      // (4) AUTH-FIRST: primeiro tira o acesso (deleteUser), depois apaga os dados.
+      // Se algo falhar no meio, no pior caso sobram dados órfãos (invisíveis, fáceis
+      // de limpar) em vez de uma conta quebrada que ainda consegue logar.
+      // NUNCA tocamos leads_base / leads_enrichment: são o cache GLOBAL compartilhado
+      // entre todas as contas (economia do Overture) — não pertencem a esta conta.
       const step = async (label: string, run: () => Promise<{ error: { message: string } | null }>) => {
         const { error } = await run();
         if (error) throw { step: label, message: error.message };
@@ -385,6 +389,12 @@ Deno.serve(async (req) => {
         admin.from(table).delete().eq(col, val);
 
       try {
+        // 1) usuários no auth PRIMEIRO — corta o acesso imediatamente
+        for (const uid of memberIds) {
+          const { error: dErr } = await admin.auth.admin.deleteUser(uid);
+          if (dErr) throw { step: `auth_user:${uid}`, message: dErr.message };
+        }
+        // 2) dados específicos da conta, na ordem filho -> pai (só o que é DA conta)
         // filhos de leads (também ligados por account_id)
         await step("lead_events", () => delBy("lead_events", "account_id", accountId));
         await step("lead_activities", () => delBy("lead_activities", "account_id", accountId));
@@ -402,13 +412,8 @@ Deno.serve(async (req) => {
           await step("notifications", () => admin.from("notifications").delete().in("user_id", memberIds));
           await step("user_roles", () => admin.from("user_roles").delete().in("user_id", memberIds));
         }
-        // profiles antes dos usuários no auth
+        // profiles
         await step("profiles", () => delBy("profiles", "account_id", accountId));
-        // usuários no auth (um por membro)
-        for (const uid of memberIds) {
-          const { error: dErr } = await admin.auth.admin.deleteUser(uid);
-          if (dErr) throw { step: `auth_user:${uid}`, message: dErr.message };
-        }
         // por fim, a própria account (cascade final cobre qualquer resíduo com account_id)
         await step("account", () => delBy("accounts", "id", accountId));
       } catch (e) {
