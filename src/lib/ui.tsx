@@ -284,6 +284,50 @@ export function KindBadge({ kind }: { kind: string }) {
   );
 }
 
+// ---- estado vazio (sem dados reais ainda — nunca inventa número) ----
+export function EmptyState({
+  title,
+  hint,
+  compact,
+}: {
+  title: string;
+  hint?: string;
+  compact?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        gap: 8,
+        padding: compact ? "26px 20px" : "44px 22px",
+      }}
+    >
+      <div style={{ width: 42, height: 42, borderRadius: 12, background: T.hover, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={T.faint} strokeWidth="1.8">
+          <path d="M3 7l2-3h14l2 3v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+          <path d="M3 7h18" />
+          <path d="M9 12h6" />
+        </svg>
+      </div>
+      <div style={{ fontSize: 13.5, fontWeight: 700, color: T.body }}>{title}</div>
+      {hint && <div style={{ fontSize: 12, color: T.muted, maxWidth: 400, lineHeight: "17px" }}>{hint}</div>}
+    </div>
+  );
+}
+
+// ---- badge "aguardando billing" (Stripe ainda não conectado) ----
+export function SoonBadge({ text = "Requer billing" }: { text?: string }) {
+  return (
+    <span style={{ fontSize: 10, fontWeight: 800, color: T.amberD, background: "rgba(245,158,11,.14)", padding: "2px 7px", borderRadius: 6, textTransform: "uppercase", letterSpacing: ".04em", flexShrink: 0 }}>
+      {text}
+    </span>
+  );
+}
+
 // ---- primitivos de tabela ----
 export const tableHeadStyle: CSSProperties = {
   fontSize: 11,

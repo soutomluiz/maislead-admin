@@ -7,7 +7,7 @@ import { Sidebar } from "./components/Sidebar";
 import { Topbar } from "./components/Topbar";
 import { SubscriptionDrawer } from "./components/SubscriptionDrawer";
 import { CustomerDrawer } from "./components/CustomerDrawer";
-import { VisaoGeral, type IdleItem } from "./screens/VisaoGeral";
+import { VisaoGeral, type IdleItem, type OverviewCounts } from "./screens/VisaoGeral";
 import { Assinaturas, type SubFilter } from "./screens/Assinaturas";
 import { Clientes, type CliFilter } from "./screens/Clientes";
 import { Financeiro } from "./screens/Financeiro";
@@ -17,8 +17,8 @@ import { Integracoes } from "./screens/Integracoes";
 import type { Sub } from "./data/mock";
 
 const TITLES: Record<Screen, [string, string]> = {
-  visao: ["Visão Geral", "Julho 2025 · atualizado agora"],
-  assinaturas: ["Assinaturas", "342 ativas · 8 em trial · 6 inadimplentes"],
+  visao: ["Visão Geral", "Métricas da plataforma · atualizado agora"],
+  assinaturas: ["Assinaturas", "Planos e cobranças recorrentes"],
   clientes: ["Clientes", "Contas reais da plataforma"],
   financeiro: ["Financeiro", "Receitas, custos e contas da plataforma"],
   cadastros: ["Cadastros", "Novos cadastros da plataforma"],
@@ -66,6 +66,7 @@ function Panel() {
   const [custLoading, setCustLoading] = useState(true);
   const [custError, setCustError] = useState<string | null>(null);
   const [leadsProcessed, setLeadsProcessed] = useState<number | null>(null);
+  const [counts, setCounts] = useState<OverviewCounts | null>(null);
 
   // Integrações (healthcheck real)
   const [integrations, setIntegrations] = useState<IntegrationHealth[]>([]);
@@ -88,6 +89,7 @@ function Panel() {
       const r = await listCustomers();
       setCustomers(r.customers);
       setLeadsProcessed(r.counts.leadsProcessed);
+      setCounts(r.counts);
       setCustError(null);
     } catch (e) {
       setCustError((e as Error).message);
@@ -140,7 +142,7 @@ function Panel() {
         <Topbar title={title} subtitle={subtitle} search={cliQuery} onSearch={onTopSearch} />
         {/* key={screen}: força remount na troca de módulo → re-dispara a animação de entrada (SPEC §2) */}
         <div key={screen} style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "24px 26px" }}>
-          {screen === "visao" && <VisaoGeral onNavigate={setScreen} leadsProcessed={leadsProcessed} idle={idle} />}
+          {screen === "visao" && <VisaoGeral onNavigate={setScreen} customers={customers} counts={counts} leadsProcessed={leadsProcessed} idle={idle} />}
           {screen === "assinaturas" && (
             <Assinaturas filter={subFilter} setFilter={setSubFilter} query={subQuery} setQuery={setSubQuery} onOpen={setOpenSub} />
           )}

@@ -1,6 +1,5 @@
 import { T } from "../theme";
-import { Card, cohortShade } from "../lib/ui";
-import { cohortRaw } from "../data/mock";
+import { Card, EmptyState, SoonBadge } from "../lib/ui";
 import type { RealCustomer } from "../lib/api";
 
 export type Period = "7d" | "30d" | "90d" | "12m";
@@ -133,40 +132,17 @@ export function Relatorios({
       </div>
 
       {/* cohort — pendente do Stripe (histórico de assinatura) */}
-      <Card style={{ padding: "20px 22px", position: "relative" }}>
+      <Card style={{ padding: "20px 22px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
           <div style={{ fontSize: 15, fontWeight: 800 }}>Retenção por cohort</div>
-          <span style={{ fontSize: 10, fontWeight: 800, color: T.amberD, background: "rgba(245,158,11,.14)", padding: "2px 7px", borderRadius: 6 }}>EXEMPLO</span>
+          <SoonBadge text="Requer Stripe" />
         </div>
-        <div style={{ fontSize: 12, color: T.muted, marginBottom: 18 }}>
-          Requer histórico de assinatura (Stripe) — dados ilustrativos até o billing entrar
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "90px repeat(6,1fr)", gap: 6, alignItems: "center", opacity: 0.85 }}>
-          <div />
-          {["Mês 0", "Mês 1", "Mês 2", "Mês 3", "Mês 4", "Mês 5"].map((m) => (
-            <div key={m} style={{ fontSize: 11, color: T.faint, fontWeight: 700, textAlign: "center" }}>{m}</div>
-          ))}
-          {cohortRaw.map((row) => (
-            <Row key={row.label} label={row.label} cells={row.cells} />
-          ))}
-        </div>
+        <div style={{ fontSize: 12, color: T.muted, marginBottom: 8 }}>Quanto de cada safra de clientes continua ativa mês a mês</div>
+        <EmptyState
+          title="Sem histórico de assinatura ainda"
+          hint="A retenção por cohort é montada a partir do histórico de cobranças do Stripe. Assim que o billing estiver conectado e houver alguns meses de dados, o mapa de calor aparece aqui."
+        />
       </Card>
     </div>
-  );
-}
-
-function Row({ label, cells }: { label: string; cells: (number | null)[] }) {
-  return (
-    <>
-      <div style={{ fontSize: 12, fontWeight: 700, color: T.body }}>{label}</div>
-      {cells.map((v, i) => {
-        const c = cohortShade(v);
-        return (
-          <div key={i} style={{ height: 38, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11.5, fontWeight: 700, background: c.bg, color: c.col }}>
-            {c.v}
-          </div>
-        );
-      })}
-    </>
   );
 }
