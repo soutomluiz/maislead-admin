@@ -1,4 +1,6 @@
 // admin-list-customers — lista de clientes reais do painel superadmin.
+// v15: preços do MRR alinhados com _shared/plans.ts do app (starter 49, pro 99,
+//      business 229) — antes usava 149/349 desatualizados.
 // v14: inclui kind/active (cadastro manual), MRR 0 pra contas não-pagantes,
 //      e considera a criação da conta como atividade (conta nova nasce "ativa").
 import { createClient } from "jsr:@supabase/supabase-js@2";
@@ -27,8 +29,10 @@ async function requireAdmin(req: Request) {
   return { admin, user };
 }
 
-const PLAN_LABEL: Record<string, string> = { starter: "Starter", pro: "Pro", business: "Business" };
-const PLAN_MRR: Record<string, number> = { starter: 49, pro: 149, business: 349 };
+const PLAN_LABEL: Record<string, string> = { free: "Free", starter: "Starter", pro: "Pro", business: "Business" };
+// Preços alinhados com _shared/plans.ts do app (fonte única). O valor cobrado real
+// vem do Stripe; esta tabela é só o fallback de exibição do MRR até o billing gravar valor.
+const PLAN_MRR: Record<string, number> = { free: 0, starter: 49, pro: 99, business: 229 };
 const money = (n: number) => "R$ " + n.toLocaleString("pt-BR");
 
 function daysSince(d: string | null): number {
