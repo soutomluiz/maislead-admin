@@ -3,6 +3,7 @@ import { T, type Screen } from "./theme";
 import { supabase } from "./lib/supabase";
 import { listCustomers, getIntegrationsHealth, type RealCustomer, type IntegrationHealth } from "./lib/api";
 import { AuthGate } from "./auth/AuthGate";
+import { useIdleLogout } from "./auth/useIdleLogout";
 import { Sidebar } from "./components/Sidebar";
 import { Topbar } from "./components/Topbar";
 import { SubscriptionDrawer } from "./components/SubscriptionDrawer";
@@ -50,6 +51,7 @@ function AccessDenied() {
 }
 
 function Panel() {
+  useIdleLogout(45); // sessão curta: expira após 45 min de inatividade (SPEC 7.2)
   const [screen, setScreen] = useState<Screen>("visao");
   const [checked, setChecked] = useState(false);
 
